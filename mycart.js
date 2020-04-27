@@ -89,7 +89,7 @@ makeRequest = (data) => {
     });
 }
 
-async function submitForm(orderObject) {
+submitForm = async (orderObject) => {
     try{
         const requestPromise = makeRequest(orderObject);
         const response = await requestPromise;

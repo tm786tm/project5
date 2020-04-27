@@ -1,4 +1,4 @@
-           
+
 requestData = () => {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
@@ -25,25 +25,20 @@ createCard = (response) => {
     card.classList.add('col', 'card', 'p-3');
     card.innerHTML += '<h2>' + response.name + '</h2>';
 
-    for (let x in response.lenses) {
-        const radio = document.createElement('input');
-        const label = document.createElement('label');
-        const br = document.createElement('br');
-        
-        radio.classList.add('mr-3');
-        radio.setAttribute('type', 'radio');
-        radio.setAttribute('name', 'lense');
-        radio.setAttribute('value', response.lenses[x]);
-        radio.setAttribute('id', 'radio' + response.lenses[x]);
-        radio.setAttribute('id', 'radio' + response.lenses[x]);
+    const dropMenuLabel = document.createElement('label');
+    dropMenuLabel.innerHTML = 'Choose you Lense here &nbsp;&nbsp;&nbsp;';
+    form.appendChild(dropMenuLabel);
+    const dropMenu = document.createElement('select');
 
-        label.innerHTML = response.lenses[x];
-        label.setAttribute('for', 'radio' + response.lenses[x]);
-        form.appendChild(radio);
-        form.appendChild(label);
-        form.appendChild(br);
-        card.appendChild(form);
+    form.appendChild(dropMenu);
+    for (let x in response.lenses) {
+        const option = document.createElement('option');
+        option.innerHTML = response.lenses[x];
+        option.setAttribute('value', response.lenses[x])
+        dropMenu.appendChild(option);
     }
+    card.appendChild(form);
+
     card.innerHTML += '<p>' + response.description + '</p>';
     card.innerHTML += '<p>' + '$' + response.price / 100 + '</p>';
 
@@ -51,12 +46,9 @@ createCard = (response) => {
     btn.innerHTML = 'Add to Cart';
     btn.addEventListener('click', () => {
         const len = getSelection();
-        if (len != undefined) {
-            const data = { name: response.name, id: response._id, lenses: len, description: response.description, price: response.price }
-            localStorage.setItem(response._id + len, JSON.stringify(data));
-        } else {
-            alert('makes selection');
-        }
+        const data = { name: response.name, id: response._id, lenses: len, description: response.description, price: response.price }
+        localStorage.setItem(response._id + len, JSON.stringify(data));
+        card.innerHTML += '<p class ="text-center text-success">Item Added to the cart</p>';
     });
 
     card.appendChild(btn);
@@ -64,9 +56,9 @@ createCard = (response) => {
 }
 
 getSelection = () => {
-    const selection = document.getElementsByTagName('input');
+    const selection = document.getElementsByTagName('option');
     for (let x in selection) {
-        if (selection[x].checked == true) {
+        if (selection[x].selected == true) {
             return selection[x].value;
         }
     }

@@ -14,6 +14,7 @@ createTable = (i) => {
     xButton.classList.add('btn', 'btn-danger');
 
     name.innerHTML = data.name;
+    products[i]=data.id;
     lense.innerHTML = data.lenses;
     price.innerHTML = '$' + data.price / 100;
     x.innerHTML = '';
@@ -63,11 +64,55 @@ tableHeadings = () => {
     }
 }
 
+makeRequest = (data) => {
+
+    return new Promise((resolve, reject) => {
+        let request = new XMLHttpRequest();
+        request.open('POST', 'http://localhost:3000/api/cameras/order');
+        request.onreadystatechange = () => {
+            
+            if (request.readyState === 4){
+                if (request.status === 201){
+                    console.log('success');
+                    resolve(JSON.parse(request.response));
+                }
+                if (request.status === 400){
+                    reject(JSON.parse(request.response));
+                    console.log('Bad request');
+                }
+            }  
+        };
+        request.setRequestHeader('Content-Type', 'application/json');
+        request.send(JSON.stringify(data));
+        
+        
+    });
+}
+
+async function submitForm(orderObject) {
+    try{
+        const requestPromise = makeRequest(orderObject);
+        const response = await requestPromise;
+        console.log(response);
+        
+    }catch(error){
+        console.log('caught error '+error);
+    }
+}
+
 const emptyButon = document.createElement('button');
 const main = document.querySelector('main');
 const total = document.createElement('h5');
 const table = document.createElement('table');
 const br = document.createElement('br');
+const submitButton = document.getElementById('submitButton');
+const surname = document.getElementById('surname');
+const forename = document.getElementById('forename');
+const address = document.getElementById('address');
+const city = document.getElementById('city');
+const email = document.getElementById('email');
+const camera = localStorage.getItem(localStorage.key(0));
+const products = [];
 
 tableHeadings();
 
@@ -77,7 +122,25 @@ for (let i = 0; i < localStorage.length; i++) {
     table.appendChild(tRow);
 }
 
+submitButton.addEventListener('click', ($event) => {
+    $event.preventDefault();
+    const contact = {
+        firstName: forename.value,
+        lastName: surname.value,
+        address: address.value,
+        city: city.value,
+        email: email.value,
+        
+    };
 
+
+    const orderObject = {
+        contact, products
+    }
+    //window.location ='https://www.google.com';
+    console.log(orderObject);
+    submitForm(orderObject);
+});
 
 
 

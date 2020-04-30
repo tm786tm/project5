@@ -47,7 +47,7 @@ createCard = (response) => {
     btn.addEventListener('click', () => {
         const len = getSelection();
         const data = { name: response.name, id: response._id, lenses: len, description: response.description, price: response.price }
-        localStorage.setItem(response._id + len, JSON.stringify(data));
+        localStorage.setItem(response._id, JSON.stringify(data));
         card.innerHTML += '<p class ="text-center text-success">Item Added to the cart</p>';
     });
 

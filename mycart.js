@@ -14,7 +14,7 @@ createTable = (i) => {
     xButton.classList.add('btn', 'btn-danger');
 
     name.innerHTML = data.name;
-    products[i]=data.id;
+    products[i] = data.id;
     lense.innerHTML = data.lenses;
     price.innerHTML = '$' + data.price / 100;
     x.innerHTML = '';
@@ -26,6 +26,7 @@ createTable = (i) => {
     totalPrice += data.price;
     total.classList.add('text-center');
     total.innerHTML = 'Total Price is - $' + totalPrice / 100;
+    sessionStorage.setItem('price', JSON.stringify(totalPrice));
     main.appendChild(total);
 
     emptyButon.innerHTML = 'Empty Cart';
@@ -70,34 +71,47 @@ makeRequest = (data) => {
         let request = new XMLHttpRequest();
         request.open('POST', 'http://localhost:3000/api/cameras/order');
         request.onreadystatechange = () => {
-            
-            if (request.readyState === 4){
-                if (request.status === 201){
+
+            if (request.readyState === 4) {
+                if (request.status === 201) {
+
                     console.log('success');
                     resolve(JSON.parse(request.response));
+
+                   
+
                 }
-                if (request.status === 400){
+                if (request.status === 400) {
                     reject(JSON.parse(request.response));
                     console.log('Bad request');
                 }
-            }  
+            }
         };
         request.setRequestHeader('Content-Type', 'application/json');
         request.send(JSON.stringify(data));
-        
-        
+
+
     });
 }
 
 submitForm = async (orderObject) => {
-    try{
+    try {
         const requestPromise = makeRequest(orderObject);
         const response = await requestPromise;
         console.log(response);
-        
-    }catch(error){
-        console.log('caught error '+error);
+        //window.localStorage.setItem('d', response.orderId);
+        displayConfirmation(response);
+
+    } catch (error) {
+        console.log('caught error ' + error);
     }
+}
+
+displayConfirmation = (response) => {
+    console.log(response);
+    localStorage.clear();
+    sessionStorage.setItem('d', JSON.stringify(response));
+    window.location ='confirmation.html';
 }
 
 const emptyButon = document.createElement('button');
@@ -124,22 +138,27 @@ for (let i = 0; i < localStorage.length; i++) {
 
 submitButton.addEventListener('click', ($event) => {
     $event.preventDefault();
-    const contact = {
-        firstName: forename.value,
-        lastName: surname.value,
-        address: address.value,
-        city: city.value,
-        email: email.value,
-        
-    };
 
-
-    const orderObject = {
-        contact, products
-    }
     //window.location ='https://www.google.com';
-    console.log(orderObject);
-    submitForm(orderObject);
+    if ((forename.value != '') && (surname.value != '') && (address.value != '') && (city.value != '') && (email.value != '')) {
+        const contact = {
+            firstName: forename.value,
+            lastName: surname.value,
+            address: address.value,
+            city: city.value,
+            email: email.value,
+        };
+
+        const orderObject = {
+            contact, products
+        };
+        console.log(orderObject);
+        submitForm(orderObject);
+
+    }
+    else {
+
+    }
 });
 
 

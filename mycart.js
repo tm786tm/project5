@@ -1,55 +1,5 @@
-createTable = (i) => {
-    let data = JSON.parse(localStorage.getItem(localStorage.key(i)));
-    const tRow = document.createElement('tr');
-    const name = document.createElement('td');
-    const lense = document.createElement('td');
-    const price = document.createElement('td');
-    const x = document.createElement('td');
-    const xButton = document.createElement('button');
-
-    table.setAttribute('id', 'table');
-    table.classList.add('table');
-    main.appendChild(table);
-
-    xButton.classList.add('btn', 'btn-danger');
-
-    name.innerHTML = data.name;
-    products[i] = data.id;
-    lense.innerHTML = data.lenses;
-    price.innerHTML = '$' + data.price / 100;
-    x.innerHTML = '';
-    xButton.innerHTML = 'X';
-    x.appendChild(xButton);
-
-    emptyButon.classList.add('btn', 'btn-secondary', 'w-25', 'mx-auto', 'mb-3');
-
-    totalPrice += data.price;
-    total.classList.add('text-center');
-    total.innerHTML = 'Total Price is - $' + totalPrice / 100;
-    sessionStorage.setItem('price', JSON.stringify(totalPrice));
-    main.appendChild(total);
-
-    emptyButon.innerHTML = 'Empty Cart';
-    //main.appendChild(emptyButon);
-
-    emptyButon.addEventListener('click', () => {
-        window.localStorage.clear();
-        table.remove();
-        main.innerHTML = '<h2 class = "text-center">Your Shopping Cart is Currently Empty</h2>';
-    });
-    xButton.addEventListener('click', () => {
-        localStorage.removeItem(localStorage.key(i));
-        xButton.parentElement.parentElement.remove();
-        location.reload();
-    });
-    tRow.appendChild(name);
-    tRow.appendChild(lense);
-    tRow.appendChild(price);
-    tRow.appendChild(x);
-    return tRow;
-}
-
-tableHeadings = () => {
+displayProductsHeadings = () => {
+    const br = document.createElement('br');
     if (localStorage.length == 0) {
         document.getElementById('orderSection').remove();
         main.innerHTML = '<h2 class = "text-center">Your Shopping Cart is Currently Empty</h2>';
@@ -65,32 +15,70 @@ tableHeadings = () => {
     }
 }
 
+displayProducts = () => {
+    const total = document.createElement('h5');
+    for (let i = 0; i < localStorage.length; i++) {
+        let data = JSON.parse(localStorage.getItem(localStorage.key(i)));
+        const tRow = document.createElement('tr');
+        const name = document.createElement('td');
+        const lense = document.createElement('td');
+        const price = document.createElement('td');
+        const x = document.createElement('td');
+        const xButton = document.createElement('button');
+
+        table.setAttribute('id', 'table');
+        table.classList.add('table');
+        main.appendChild(table);
+
+        xButton.classList.add('btn', 'btn-danger');
+
+        name.innerHTML = data.name;
+        products[i] = data.id;
+        lense.innerHTML = data.lenses;
+        price.innerHTML = '$' + data.price / 100;
+        x.innerHTML = '';
+        xButton.innerHTML = 'X';
+        x.appendChild(xButton);
+
+        totalPrice += data.price;
+        total.classList.add('text-center');
+        total.innerHTML = 'Total Price is - $' + totalPrice / 100;
+        sessionStorage.setItem('price', JSON.stringify(totalPrice));
+        main.appendChild(total);
+
+        xButton.addEventListener('click', () => {
+            localStorage.removeItem(localStorage.key(i));
+            xButton.parentElement.parentElement.remove();
+            location.reload();
+        });
+        tRow.appendChild(name);
+        tRow.appendChild(lense);
+        tRow.appendChild(price);
+        tRow.appendChild(x);
+        table.appendChild(tRow);
+    }
+
+}
+
+
 makeRequest = (data) => {
-
     return new Promise((resolve, reject) => {
-        let request = new XMLHttpRequest();
-        request.open('POST', 'http://localhost:3000/api/cameras/order');
-        request.onreadystatechange = () => {
+        let apiRequest = new XMLHttpRequest();
+        apiRequest.open('POST', 'http://localhost:3000/api/cameras/order');
+        apiRequest.setRequestHeader('Content-Type', 'application/json');
+        apiRequest.send(JSON.stringify(data));
+        apiRequest.onreadystatechange = () => {
 
-            if (request.readyState === 4) {
-                if (request.status === 201) {
-
-                    console.log('success');
-                    resolve(JSON.parse(request.response));
-
-                   
-
+            if (apiRequest.readyState === 4) {
+                if (apiRequest.status === 201) {
+                    resolve(JSON.parse(apiRequest.response));
                 }
-                if (request.status === 400) {
-                    reject(JSON.parse(request.response));
+                if (apiRequest.status === 400) {
+                    reject(JSON.parse(apiRequest.response));
                     console.log('Bad request');
                 }
             }
         };
-        request.setRequestHeader('Content-Type', 'application/json');
-        request.send(JSON.stringify(data));
-
-
     });
 }
 
@@ -98,8 +86,6 @@ submitForm = async (orderObject) => {
     try {
         const requestPromise = makeRequest(orderObject);
         const response = await requestPromise;
-        console.log(response);
-        //window.localStorage.setItem('d', response.orderId);
         displayConfirmation(response);
 
     } catch (error) {
@@ -107,59 +93,45 @@ submitForm = async (orderObject) => {
     }
 }
 
-displayConfirmation = (response) => {
-    console.log(response);
-    localStorage.clear();
-    sessionStorage.setItem('d', JSON.stringify(response));
-    window.location ='confirmation.html';
+submition = () => {
+    const submitButton = document.getElementById('submitButton');
+    const surname = document.getElementById('surname');
+    const forename = document.getElementById('forename');
+    const address = document.getElementById('address');
+    const city = document.getElementById('city');
+    const email = document.getElementById('email');
+    submitButton.addEventListener('click', ($event) => {
+        $event.preventDefault();
+        if ((forename.value != '') && (surname.value != '') && (address.value != '') && (city.value != '') && (email.value != '')) {
+            const contact = {
+                firstName: forename.value,
+                lastName: surname.value,
+                address: address.value,
+                city: city.value,
+                email: email.value,
+            };
+
+            const orderObject = {
+                contact, products
+            };
+            submitForm(orderObject);
+        }
+    });
 }
 
-const emptyButon = document.createElement('button');
+displayConfirmation = (response) => {
+    localStorage.clear();
+    sessionStorage.setItem('data', JSON.stringify(response));
+    window.location = 'confirmation.html';
+}
+
 const main = document.querySelector('main');
-const total = document.createElement('h5');
 const table = document.createElement('table');
-const br = document.createElement('br');
-const submitButton = document.getElementById('submitButton');
-const surname = document.getElementById('surname');
-const forename = document.getElementById('forename');
-const address = document.getElementById('address');
-const city = document.getElementById('city');
-const email = document.getElementById('email');
-const camera = localStorage.getItem(localStorage.key(0));
+
+
 const products = [];
 
-tableHeadings();
-
+displayProductsHeadings();
 let totalPrice = 0;
-for (let i = 0; i < localStorage.length; i++) {
-    const tRow = createTable(i);
-    table.appendChild(tRow);
-}
-
-submitButton.addEventListener('click', ($event) => {
-    $event.preventDefault();
-
-    //window.location ='https://www.google.com';
-    if ((forename.value != '') && (surname.value != '') && (address.value != '') && (city.value != '') && (email.value != '')) {
-        const contact = {
-            firstName: forename.value,
-            lastName: surname.value,
-            address: address.value,
-            city: city.value,
-            email: email.value,
-        };
-
-        const orderObject = {
-            contact, products
-        };
-        console.log(orderObject);
-        submitForm(orderObject);
-
-    }
-    else {
-
-    }
-});
-
-
-
+displayProducts();
+submition();

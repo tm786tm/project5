@@ -1,5 +1,4 @@
-
-requestData = () => {
+makeRequest = () => {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
     const id = urlParams.get('id');
@@ -7,7 +6,11 @@ requestData = () => {
     let apiRequest = new XMLHttpRequest();
     apiRequest.open('GET', 'http://localhost:3000/api/cameras/' + id);
     apiRequest.send();
-    return apiRequest;
+    apiRequest.onreadystatechange = () => {
+        if ((apiRequest.readyState === 4) && (apiRequest.status === 200)) {
+            createCard(JSON.parse(apiRequest.response));
+        }
+    }
 }
 
 createCard = (response) => {
@@ -16,6 +19,9 @@ createCard = (response) => {
     const newImg = document.createElement('IMG');
     const btn = document.createElement('button');
     const form = document.createElement('form');
+    const main = document.querySelector('main');
+    const dropMenuLabel = document.createElement('label');
+    const dropMenu = document.createElement('select'); 
 
     newImg.classList.add('img');
     newImg.setAttribute('width', '100%');
@@ -25,11 +31,8 @@ createCard = (response) => {
     card.classList.add('col', 'card', 'p-3');
     card.innerHTML += '<h2>' + response.name + '</h2>';
 
-    const dropMenuLabel = document.createElement('label');
     dropMenuLabel.innerHTML = 'Choose you Lense here &nbsp;&nbsp;&nbsp;';
     form.appendChild(dropMenuLabel);
-    const dropMenu = document.createElement('select');
-
     form.appendChild(dropMenu);
     for (let x in response.lenses) {
         const option = document.createElement('option');
@@ -52,7 +55,7 @@ createCard = (response) => {
     });
 
     card.appendChild(btn);
-    return card;
+    main.appendChild(card);
 }
 
 getSelection = () => {
@@ -64,13 +67,5 @@ getSelection = () => {
     }
 }
 
-const apiRequest = requestData();
+makeRequest();
 
-apiRequest.onreadystatechange = () => {
-    if (apiRequest.readyState === 4) {
-        const response = JSON.parse(apiRequest.response);
-        const main = document.querySelector('main');
-        const card = createCard(response);
-        main.appendChild(card);
-    }
-}

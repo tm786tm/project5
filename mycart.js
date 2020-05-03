@@ -60,7 +60,6 @@ displayProducts = () => {
 
 }
 
-
 makeRequest = (data) => {
     return new Promise((resolve, reject) => {
         let apiRequest = new XMLHttpRequest();
@@ -80,17 +79,6 @@ makeRequest = (data) => {
             }
         };
     });
-}
-
-submitForm = async (orderObject) => {
-    try {
-        const requestPromise = makeRequest(orderObject);
-        const response = await requestPromise;
-        displayConfirmation(response);
-
-    } catch (error) {
-        console.log('caught error ' + error);
-    }
 }
 
 submition = () => {
@@ -117,6 +105,17 @@ submition = () => {
             submitForm(orderObject);
         }
     });
+}
+
+submitForm = async (orderObject) => {
+    try {
+        const requestPromise = makeRequest(orderObject);
+        const response = await requestPromise;
+        displayConfirmation(response);
+
+    } catch (error) {
+        console.log('caught error ' + error);
+    }
 }
 
 displayConfirmation = (response) => {

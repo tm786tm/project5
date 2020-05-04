@@ -57,28 +57,6 @@ displayProducts = () => {
         tRow.appendChild(x);
         table.appendChild(tRow);
     }
-
-}
-
-makeRequest = (data) => {
-    return new Promise((resolve, reject) => {
-        let apiRequest = new XMLHttpRequest();
-        apiRequest.open('POST', 'http://localhost:3000/api/cameras/order');
-        apiRequest.setRequestHeader('Content-Type', 'application/json');
-        apiRequest.send(JSON.stringify(data));
-        apiRequest.onreadystatechange = () => {
-
-            if (apiRequest.readyState === 4) {
-                if (apiRequest.status === 201) {
-                    resolve(JSON.parse(apiRequest.response));
-                }
-                if (apiRequest.status === 400) {
-                    reject(JSON.parse(apiRequest.response));
-                    console.log('Bad request');
-                }
-            }
-        };
-    });
 }
 
 submition = () => {
@@ -118,6 +96,25 @@ submitForm = async (orderObject) => {
     }
 }
 
+makeRequest = (data) => {
+    return new Promise((resolve, reject) => {
+        let apiRequest = new XMLHttpRequest();
+        apiRequest.open('POST', 'http://localhost:3000/api/cameras/order');
+        apiRequest.setRequestHeader('Content-Type', 'application/json');
+        apiRequest.send(JSON.stringify(data));
+        apiRequest.onreadystatechange = () => {
+            if (apiRequest.readyState === 4) {
+                if (apiRequest.status === 201) {
+                    resolve(JSON.parse(apiRequest.response));
+                }
+                if (apiRequest.status === 400) {
+                    reject(JSON.parse(apiRequest.response));
+                }
+            }
+        };
+    });
+}
+
 displayConfirmation = (response) => {
     localStorage.clear();
     sessionStorage.setItem('data', JSON.stringify(response));
@@ -126,8 +123,6 @@ displayConfirmation = (response) => {
 
 const main = document.querySelector('main');
 const table = document.createElement('table');
-
-
 const products = [];
 
 displayProductsHeadings();

@@ -1,16 +1,22 @@
 makeRequest = () => {
-    const queryString = window.location.search;
-    const urlParams = new URLSearchParams(queryString);
-    const id = urlParams.get('id');
+    return new Promise((resolve, reject) => {
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        const id = urlParams.get('id');
 
-    let apiRequest = new XMLHttpRequest();
-    apiRequest.open('GET', 'http://localhost:3000/api/cameras/' + id);
-    apiRequest.send();
-    apiRequest.onreadystatechange = () => {
-        if ((apiRequest.readyState === 4) && (apiRequest.status === 200)) {
-            createCard(JSON.parse(apiRequest.response));
+        let apiRequest = new XMLHttpRequest();
+        apiRequest.open('GET', 'http://localhost:3000/api/cameras/' + id);
+        apiRequest.send();
+        apiRequest.onreadystatechange = () => {
+            if (apiRequest.readyState === 4) {
+                if (apiRequest.status === 200) {
+                    resolve(JSON.parse(apiRequest.response));
+                } else {
+                    reject('Request Failed!!!')
+                }
+            }
         }
-    }
+    });
 }
 
 createCard = (response) => {
@@ -21,7 +27,7 @@ createCard = (response) => {
     const form = document.createElement('form');
     const main = document.querySelector('main');
     const dropMenuLabel = document.createElement('label');
-    const dropMenu = document.createElement('select'); 
+    const dropMenu = document.createElement('select');
 
     newImg.classList.add('img');
     newImg.setAttribute('width', '100%');
@@ -67,5 +73,15 @@ getSelection = () => {
     }
 }
 
-makeRequest();
+init = async () => {
+    try {
+        const response = await makeRequest();
+        createCard(response);
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+init();
+
 

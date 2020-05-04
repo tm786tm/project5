@@ -1,12 +1,19 @@
 makeRequest = () => {
-    let apiRequest = new XMLHttpRequest();
-    apiRequest.open('GET', 'http://localhost:3000/api/cameras/');
-    apiRequest.send();
-    apiRequest.onreadystatechange = () => {
-        if ((apiRequest.readyState === 4) && (apiRequest.status === 200)) {
-            createCard(JSON.parse(apiRequest.response));
+    return new Promise((resolve, reject) => {
+        let apiRequest = new XMLHttpRequest();
+        apiRequest.open('GET', 'http://localhost:3000/api/cameras/');
+        apiRequest.send();
+        apiRequest.onreadystatechange = () => {
+            if (apiRequest.readyState === 4) {
+                if (apiRequest.status === 200) {
+                    resolve(JSON.parse(apiRequest.response));
+                }
+                else {
+                    reject('Request failed');
+                }
+            }
         }
-    }
+    });
 }
 
 createCard = (response) => {
@@ -35,4 +42,14 @@ createCard = (response) => {
     }
 }
 
-makeRequest();
+init = async () => {
+    try {
+        const response = await makeRequest();
+         createCard(response);
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+init();
+

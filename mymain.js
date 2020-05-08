@@ -44,8 +44,9 @@ createCard = (response) => {
 
 init = async () => {
     try {
-        const response = await makeRequest();
-         createCard(response);
+        const requestPromise = makeRequest();
+        const response = await requestPromise;
+        createCard(response);
     } catch (error) {
         console.log(error);
     }

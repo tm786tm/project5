@@ -60,64 +60,102 @@ displayProducts = () => {
     }
 }
 
-submition = () => {
+validation = () => {
     const submitButton = document.getElementById('submitButton');
     const surname = document.getElementById('surname');
     const forename = document.getElementById('forename');
     const address = document.getElementById('address');
     const city = document.getElementById('city');
     const email = document.getElementById('email');
+    let isSurnameValid = false;
+    let isForenameValid = false;
+    let isValidAddress = false;
+    let isCityValid = false;
+    let isEmailValid = false;
+    
+    const regName = /^[A-Za-z]{3,32}$/;
+    const regAddress = /^[A-Za-z0-9 ]{7,32}$/;
+    const emailReg = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/
 
-    surname.addEventListener('blur', () => {
-        const surnameError = document.getElementById('surnameError');
-        const isValidSurname = surname.checkValidity();
-        if (isValidSurname) {
+     surname.addEventListener('blur', () => {
+        if (regName.test(surname.value)){
             surnameError.classList.add('d-none');
+            isSurnameValid = true;
+            surname.style.border = 'medium solid green';
         }
-        else {
+        else{0
             surnameError.classList.remove('d-none');
+            isSurnameValid = false;
+            surname.style.border = 'medium solid red';
         }
-    });
+     });
 
-    forename.addEventListener('blur', () => {
-        const forenameError = document.getElementById('forenameError');
-        const isValidForename = forename.checkValidity();
-        if (isValidForename) {
+     forename.addEventListener('blur', () => {
+        if ((forename.value.length >= 3) && (forename.value.length <= 32) && (regName.test(forename.value))){
             forenameError.classList.add('d-none');
+            isForenameValid = true;
+            forename.style.border = 'medium solid green';
         }
-        else {
+        else{
             forenameError.classList.remove('d-none');
+            isForenameValid = false;
+            forename.style.border = 'medium solid red';
         }
-    });
+     });
+    
+     address.addEventListener('blur', () => {
+        if ((address.value.length >= 3) && (address.value.length <= 32) && (regAddress.test(address.value))){
+            addressError.classList.add('d-none');
+            isValidAddress = true;
+            address.style.border = 'medium solid green';
+        }
+        else{
+            addressError.classList.remove('d-none');
+            isValidAddress = false;
+            address.style.border = 'medium solid red';
+        }
+     });
 
-    city.addEventListener('blur', () => {
-        const cityError = document.getElementById('cityError');
-        const isValidCity = city.checkValidity();
-        if (isValidCity) {
+     city.addEventListener('blur', () => {
+        if ((city.value.length >= 3) && (city.value.length <= 32) && (regName.test(city.value))){
             cityError.classList.add('d-none');
+            isCityValid = true;
+            city.style.border = 'medium solid green';
         }
-        else {
+        else{
             cityError.classList.remove('d-none');
+            isCityValid = false;
+            city.style.border = 'medium solid red';
         }
-    });
-
-    email.addEventListener('blur', () => {
-        const emailError = document.getElementById('emailError');
-        const isValidEmail = email.checkValidity();
-        if (isValidEmail) {
+     });
+         
+     email.addEventListener('blur', () => {
+        if ((email.value.length >= 3) && (email.value.length <= 32) && (emailReg.test(email.value))){
             emailError.classList.add('d-none');
+            isEmailValid = true;
+            email.style.border = 'medium solid green';
+            submitError.classList.add('d-none');
         }
-        else {
+        else{
             emailError.classList.remove('d-none');
+            isEmailValid = false;
+            email.style.border = 'medium solid red';
         }
-    });
+     });
+
+    // email.addEventListener('blur', () => {
+    //     const emailError = document.getElementById('emailError');
+    //     const isValidEmail = email.checkValidity();
+    //     if (isValidEmail) {
+    //         emailError.classList.add('d-none');
+    //     }
+    //     else {
+    //         emailError.classList.remove('d-none');
+    //     }
+    // });
 
     submitButton.addEventListener('click', ($event) => {
         $event.preventDefault();
-        const isValidEmail = email.checkValidity();
-        const isValidSurname = surname.checkValidity();
-        const isValidForename = forename.checkValidity();
-        const isValidCity = city.checkValidity();
         const contact = {
             firstName: forename.value,
             lastName: surname.value,
@@ -129,8 +167,8 @@ submition = () => {
         const orderObject = {
             contact, products
         };
-
-        if ((forename.value != '') && (surname.value != '') && (address.value != '') && (city.value != '') && (email.value != '') && (isValidEmail) && (isValidSurname) && (isValidForename) && (isValidCity)) {
+        console.log(isSurnameValid);
+        if ((isSurnameValid) && (isForenameValid) && (isCityValid) && (isEmailValid) && (isValidAddress)){//} && (isValidEmail) && (isValidSurname) && (isValidForename) && (isValidCity)) {
             console.log('hi');
             submitForm(orderObject);
         }
@@ -138,7 +176,26 @@ submition = () => {
             const submitError = document.getElementById('submitError');
             submitError.classList.remove('d-none');
         }
-
+        if(surname.value ===''){
+            surnameError.classList.remove('d-none');
+            surname.style.border = 'medium solid red';
+        }
+        if(forename.value ===''){
+            forenameError.classList.remove('d-none');
+            forename.style.border = 'medium solid red';
+        }
+        if(address.value ===''){
+            addressError.classList.remove('d-none');
+            address.style.border = 'medium solid red';
+        }
+        if(city.value ===''){
+            cityError.classList.remove('d-none');
+            city.style.border = 'medium solid red';
+        }
+        if(email.value ===''){
+            emailError.classList.remove('d-none');
+            email.style.border = 'medium solid red';
+        }
     });
 }
 
@@ -186,4 +243,4 @@ const products = [];
 displayProductsHeadings();
 let totalPrice = 0;
 displayProducts();
-submition();
+validation();

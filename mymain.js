@@ -1,3 +1,4 @@
+//function to make api request
 makeRequest = () => {
     return new Promise((resolve, reject) => {
         let apiRequest = new XMLHttpRequest();

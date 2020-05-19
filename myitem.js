@@ -1,3 +1,4 @@
+//function to make api request
 makeRequest = () => {
     return new Promise((resolve, reject) => {
         const queryString = window.location.search;
@@ -28,7 +29,7 @@ createCard = (response) => {
     const main = document.querySelector('main');
     const dropMenuLabel = document.createElement('label');
     const dropMenu = document.createElement('select');
-
+    const newP = document.createElement('p');
 
     newImg.classList.add('img');
     newImg.setAttribute('width', '100%');
@@ -54,25 +55,30 @@ createCard = (response) => {
 
     btn.classList.add('btn', 'btn-secondary', 'w-25', 'mx-auto');
     btn.innerHTML = 'Add to Cart';
-    
+    newP.classList.add('text-center', 'text-success');
+
     btn.addEventListener('click', () => {
         const len = document.querySelector('select').value;
-        console.log(len);
-        const data = { name: response.name, id: response._id, lenses: len, description: response.description, price: response.price }
-        localStorage.setItem(response._id+len, JSON.stringify(data));
-        card.innerHTML += '<p class ="text-center text-success">' + response.name + ' with ' + len + ' lenses added to cart.</p>';
-        window.location = 'cart.html';
-    });
+        const data = { name: response.name, id: response._id, lenses: len, description: response.description, price: response.price };
+        localStorage.setItem(response._id + len, JSON.stringify(data));
+        newP.innerText = response.name + ' with the ' + len + ' lense added to the cart.';
+        card.appendChild(newP);
 
+    });
+    card.innerHTML += '<a href = "index.html">Back to Shop</a>';
     card.appendChild(btn);
+
     main.appendChild(card);
+
 }
 
 init = async () => {
     try {
         const requestPromise = makeRequest();
         const response = await requestPromise;
+
         createCard(response);
+
     } catch (error) {
         console.log(error);
     }
